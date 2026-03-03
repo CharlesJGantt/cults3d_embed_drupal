@@ -42,6 +42,16 @@ class Cults3dModelItem extends FieldItemBase {
           'unsigned' => TRUE,
           'default' => 0,
         ],
+        'likes_count' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'default' => 0,
+        ],
+        'views_count' => [
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'default' => 0,
+        ],
         'price' => [
           'type' => 'varchar',
           'length' => 64,
@@ -76,6 +86,12 @@ class Cults3dModelItem extends FieldItemBase {
 
     $properties['download_count'] = DataDefinition::create('integer')
       ->setLabel(t('Download Count'));
+
+    $properties['likes_count'] = DataDefinition::create('integer')
+      ->setLabel(t('Likes Count'));
+
+    $properties['views_count'] = DataDefinition::create('integer')
+      ->setLabel(t('Views Count'));
 
     $properties['price'] = DataDefinition::create('string')
       ->setLabel(t('Price'));

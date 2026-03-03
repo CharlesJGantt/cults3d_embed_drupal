@@ -24,6 +24,8 @@ function cults3d_embed_theme($existing, $type, $theme, $path) {
         'model_name' => NULL,
         'description_summary' => NULL,
         'download_count' => NULL,
+        'likes_count' => NULL,
+        'views_count' => NULL,
         'price' => NULL,
         'thumbnail_url' => NULL,
         'cults3d_url' => NULL,

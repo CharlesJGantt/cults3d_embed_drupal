@@ -43,6 +43,8 @@ export default class InsertCults3dCardCommand extends Command {
             'data-cults3d-name': data.name || '',
             'data-cults3d-desc': data.description || '',
             'data-cults3d-downloads': data.download_count || 0,
+            'data-cults3d-likes': data.likes_count || 0,
+            'data-cults3d-views': data.views_count || 0,
             'data-cults3d-price': data.price || 'Free',
             'data-cults3d-thumb': data.thumbnail_url || '',
           });

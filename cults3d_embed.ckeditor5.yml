@@ -9,4 +9,4 @@ cults3d_embed_cults3dmodel:
       Cults3DModel:
         label: "Insert Cults3D Model"
     elements:
-      - <div class="cults3d-embed-card-wrapper" data-cults3d-url data-cults3d-name data-cults3d-desc data-cults3d-downloads data-cults3d-price data-cults3d-thumb>
+      - <div class="cults3d-embed-card-wrapper" data-cults3d-url data-cults3d-name data-cults3d-desc data-cults3d-downloads data-cults3d-likes data-cults3d-views data-cults3d-price data-cults3d-thumb>

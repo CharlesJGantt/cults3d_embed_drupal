@@ -43,6 +43,8 @@ class Cults3dCardFilter extends FilterBase {
       $name = $node->getAttribute('data-cults3d-name');
       $desc = $node->getAttribute('data-cults3d-desc');
       $downloads = $node->getAttribute('data-cults3d-downloads');
+      $likes = $node->getAttribute('data-cults3d-likes');
+      $views = $node->getAttribute('data-cults3d-views');
       $price = $node->getAttribute('data-cults3d-price');
       $thumb = $node->getAttribute('data-cults3d-thumb');
 
@@ -51,6 +53,8 @@ class Cults3dCardFilter extends FilterBase {
       $name = Xss::filter($name);
       $desc = Xss::filter($desc);
       $downloads = Xss::filter($downloads);
+      $likes = Xss::filter($likes);
+      $views = Xss::filter($views);
       $price = $price ?: 'Free';
       $price = Xss::filter($price);
       $thumb = Xss::filter($thumb);
@@ -63,6 +67,8 @@ class Cults3dCardFilter extends FilterBase {
         '#model_name' => $name,
         '#description_summary' => $desc,
         '#download_count' => $downloads,
+        '#likes_count' => $likes,
+        '#views_count' => $views,
         '#price' => $price,
         '#thumbnail_url' => $thumb,
         '#cults3d_url' => $url,

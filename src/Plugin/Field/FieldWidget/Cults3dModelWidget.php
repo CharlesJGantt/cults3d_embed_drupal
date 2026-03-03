@@ -56,7 +56,7 @@ class Cults3dModelWidget extends WidgetBase {
     }
 
     // Hidden fields to pass through existing values.
-    foreach (['model_name', 'description_summary', 'download_count', 'price', 'thumbnail_url', 'fetched_at'] as $key) {
+    foreach (['model_name', 'description_summary', 'download_count', 'likes_count', 'views_count', 'price', 'thumbnail_url', 'fetched_at'] as $key) {
       $element[$key] = [
         '#type' => 'hidden',
         '#default_value' => $item->{$key} ?? '',
@@ -98,6 +98,8 @@ class Cults3dModelWidget extends WidgetBase {
         $value['model_name'] = $fetched['model_name'];
         $value['description_summary'] = $fetched['description_summary'];
         $value['download_count'] = $fetched['download_count'];
+        $value['likes_count'] = $fetched['likes_count'];
+        $value['views_count'] = $fetched['views_count'];
         $value['price'] = $fetched['price'];
         $value['thumbnail_url'] = $fetched['thumbnail_url'];
         $value['fetched_at'] = time();
@@ -134,7 +136,7 @@ class Cults3dModelWidget extends WidgetBase {
       return NULL;
     }
 
-    $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
+    $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount likesCount viewsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
 
     try {
       $response = \Drupal::httpClient()->post('https://cults3d.com/graphql', [
@@ -175,6 +177,8 @@ class Cults3dModelWidget extends WidgetBase {
         'model_name' => $creation['name'] ?? '',
         'description_summary' => $description,
         'download_count' => (int) ($creation['downloadsCount'] ?? 0),
+        'likes_count' => (int) ($creation['likesCount'] ?? 0),
+        'views_count' => (int) ($creation['viewsCount'] ?? 0),
         'price' => $price,
         'thumbnail_url' => $creation['illustrationImageUrl'] ?? '',
       ];

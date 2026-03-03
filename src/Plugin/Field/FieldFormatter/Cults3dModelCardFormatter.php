@@ -34,6 +34,8 @@ class Cults3dModelCardFormatter extends FormatterBase {
         '#model_name' => $item->model_name,
         '#description_summary' => $item->description_summary,
         '#download_count' => $item->download_count,
+        '#likes_count' => $item->likes_count,
+        '#views_count' => $item->views_count,
         '#price' => $item->price ?: 'Free',
         '#thumbnail_url' => $item->thumbnail_url,
         '#cults3d_url' => $item->cults3d_url,

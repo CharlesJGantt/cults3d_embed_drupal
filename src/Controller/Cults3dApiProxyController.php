@@ -38,7 +38,7 @@ class Cults3dApiProxyController extends ControllerBase {
       return new JsonResponse(['error' => 'Cults3D API credentials not configured.'], 500);
     }
 
-    $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
+    $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount likesCount viewsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
 
     try {
       $response = \Drupal::httpClient()->post('https://cults3d.com/graphql', [
@@ -78,6 +78,8 @@ class Cults3dApiProxyController extends ControllerBase {
         'name' => $creation['name'] ?? '',
         'description' => $description,
         'download_count' => (int) ($creation['downloadsCount'] ?? 0),
+        'likes_count' => (int) ($creation['likesCount'] ?? 0),
+        'views_count' => (int) ($creation['viewsCount'] ?? 0),
         'price' => $price,
         'thumbnail_url' => $creation['illustrationImageUrl'] ?? '',
         'cults3d_url' => $url,

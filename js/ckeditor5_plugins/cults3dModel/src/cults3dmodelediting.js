@@ -33,6 +33,8 @@ export default class Cults3DModelEditing extends Plugin {
         'data-cults3d-name',
         'data-cults3d-desc',
         'data-cults3d-downloads',
+        'data-cults3d-likes',
+        'data-cults3d-views',
         'data-cults3d-price',
         'data-cults3d-thumb',
       ],
@@ -54,6 +56,8 @@ export default class Cults3DModelEditing extends Plugin {
           'data-cults3d-name': viewElement.getAttribute('data-cults3d-name'),
           'data-cults3d-desc': viewElement.getAttribute('data-cults3d-desc'),
           'data-cults3d-downloads': viewElement.getAttribute('data-cults3d-downloads'),
+          'data-cults3d-likes': viewElement.getAttribute('data-cults3d-likes'),
+          'data-cults3d-views': viewElement.getAttribute('data-cults3d-views'),
           'data-cults3d-price': viewElement.getAttribute('data-cults3d-price'),
           'data-cults3d-thumb': viewElement.getAttribute('data-cults3d-thumb'),
         });
@@ -70,6 +74,8 @@ export default class Cults3DModelEditing extends Plugin {
           'data-cults3d-name': modelElement.getAttribute('data-cults3d-name'),
           'data-cults3d-desc': modelElement.getAttribute('data-cults3d-desc'),
           'data-cults3d-downloads': modelElement.getAttribute('data-cults3d-downloads'),
+          'data-cults3d-likes': modelElement.getAttribute('data-cults3d-likes'),
+          'data-cults3d-views': modelElement.getAttribute('data-cults3d-views'),
           'data-cults3d-price': modelElement.getAttribute('data-cults3d-price'),
           'data-cults3d-thumb': modelElement.getAttribute('data-cults3d-thumb'),
         });
@@ -84,6 +90,8 @@ export default class Cults3DModelEditing extends Plugin {
         const name = modelElement.getAttribute('data-cults3d-name') || '';
         const price = modelElement.getAttribute('data-cults3d-price') || 'Free';
         const downloads = modelElement.getAttribute('data-cults3d-downloads') || '0';
+        const likes = modelElement.getAttribute('data-cults3d-likes') || '0';
+        const views = modelElement.getAttribute('data-cults3d-views') || '0';
 
         const container = writer.createContainerElement('div', {
           class: 'cults3d-embed-card-wrapper cults3d-embed-card-editor',
@@ -95,7 +103,7 @@ export default class Cults3DModelEditing extends Plugin {
 
         writer.insert(
           writer.createPositionAt(label, 0),
-          writer.createText(`Cults3D: ${name} | ${price} | ${downloads} downloads`)
+          writer.createText(`Cults3D: ${name} | ${price} | ${downloads} DL | ${likes} likes | ${views} views`)
         );
 
         writer.insert(writer.createPositionAt(container, 0), label);

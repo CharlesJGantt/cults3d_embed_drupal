@@ -14,7 +14,9 @@
 
 .cults3d-embed .thumbnail {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #f5f5f5;
   flex-shrink: 0;
   width: 253px;
   height: 190px;
@@ -88,9 +90,9 @@
 
 .cults3d-embed .stats {
   display: flex;
-  gap: 22px;
+  gap: 15px;
   color: #555;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 0;
 }
 
@@ -98,15 +100,23 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  min-width: 42px;
+  min-width: 38px;
 }
 
 .cults3d-embed .stat-icon {
-  margin-right: 5px;
-  width: 18px;
-  height: 18px;
+  margin-right: 4px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   fill: currentColor;
+}
+
+.cults3d-embed .price-tag {
+  font-size: 18px;
+  font-weight: bold;
+  color: #822EF5;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cults3d-embed .view-button {
@@ -120,7 +130,7 @@
   transition: background-color 0.2s;
   white-space: nowrap;
   flex-shrink: 0;
-  margin-left: 15px;
+  margin-left: 10px;
 }
 
 .cults3d-embed .view-button:hover {
