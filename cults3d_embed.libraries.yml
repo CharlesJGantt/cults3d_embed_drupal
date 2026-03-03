@@ -1,0 +1,11 @@
+card:
+  css:
+    component:
+      css/cults3d-embed-card.css: {}
+
+ckeditor5.cults3d:
+  js:
+    js/build/cults3dModel.js: { preprocess: false, minified: true }
+  dependencies:
+    - core/ckeditor5
+    - core/drupal

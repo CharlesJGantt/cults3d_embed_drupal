@@ -1,0 +1,15 @@
+cults3d_embed.settings:
+  path: '/admin/config/services/cults3d'
+  defaults:
+    _form: '\Drupal\cults3d_embed\Form\Cults3dSettingsForm'
+    _title: 'Cults3D Settings'
+  requirements:
+    _permission: 'administer cults3d embed settings'
+
+cults3d_embed.api_proxy:
+  path: '/cults3d-embed/fetch'
+  defaults:
+    _controller: '\Drupal\cults3d_embed\Controller\Cults3dApiProxyController::fetch'
+  requirements:
+    _permission: 'use cults3d embed ckeditor plugin'
+  methods: [POST]

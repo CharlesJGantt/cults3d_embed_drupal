@@ -1,0 +1,6 @@
+cults3d_embed.settings:
+  title: 'Cults3D Settings'
+  description: 'Configure Cults3D API credentials and settings.'
+  route_name: cults3d_embed.settings
+  parent: system.admin_config_services
+  weight: 50

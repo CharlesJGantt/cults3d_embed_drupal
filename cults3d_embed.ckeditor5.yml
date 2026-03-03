@@ -1,0 +1,12 @@
+cults3d_embed_cults3dmodel:
+  ckeditor5:
+    plugins:
+      - cults3dModel.Cults3DModel
+  drupal:
+    label: "Cults3D Model Card"
+    library: cults3d_embed/ckeditor5.cults3d
+    toolbar_items:
+      Cults3DModel:
+        label: "Insert Cults3D Model"
+    elements:
+      - <div class="cults3d-embed-card-wrapper" data-cults3d-url data-cults3d-name data-cults3d-desc data-cults3d-downloads data-cults3d-price data-cults3d-thumb>

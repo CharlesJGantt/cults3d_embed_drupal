@@ -1,0 +1,9 @@
+name: 'Cults3D Embed'
+type: module
+description: 'Cults3D model field type and CKEditor 5 plugin for embedding 3D printable model cards.'
+core_version_requirement: ^10
+package: 'Content'
+dependencies:
+  - drupal:field
+  - drupal:node
+  - drupal:ckeditor5

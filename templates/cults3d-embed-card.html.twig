@@ -1,0 +1,16 @@
+<div class="cults3d-embed-card">
+  {% if thumbnail_url %}
+  <div class="cults3d-embed-thumb">
+    <img src="{{ thumbnail_url }}" alt="{{ model_name }}" loading="lazy">
+  </div>
+  {% endif %}
+  <div class="cults3d-embed-body">
+    <h3 class="cults3d-embed-name">{{ model_name }}</h3>
+    <p class="cults3d-embed-desc">{{ description_summary }}</p>
+    <div class="cults3d-embed-meta">
+      <span class="cults3d-embed-price">{{ price }}</span>
+      <span class="cults3d-embed-downloads">{{ download_count }} downloads</span>
+    </div>
+    <a href="{{ cults3d_url }}" target="_blank" rel="noopener" class="cults3d-embed-btn">Get This Model</a>
+  </div>
+</div>

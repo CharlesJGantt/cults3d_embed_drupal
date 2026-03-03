@@ -1,0 +1,8 @@
+administer cults3d embed settings:
+  title: 'Administer Cults3D Embed settings'
+  description: 'Configure API credentials for the Cults3D integration.'
+  restrict access: true
+
+use cults3d embed ckeditor plugin:
+  title: 'Use Cults3D Embed CKEditor plugin'
+  description: 'Insert Cults3D model cards via the CKEditor toolbar button.'
