@@ -74,7 +74,7 @@ class Cults3dCardFilter extends FilterBase {
         '#cults3d_url' => $url,
       ];
 
-      $card_html = (string) \Drupal::service('renderer')->renderPlain($render);
+      $card_html = (string) \Drupal::service('renderer')->renderInIsolation($render);
 
       // Parse the rendered card HTML into a temporary DOM document,
       // then import nodes into the main DOM (avoids appendXML XML parsing).

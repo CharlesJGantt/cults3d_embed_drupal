@@ -3,7 +3,9 @@
 namespace Drupal\cults3d_embed\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -11,6 +13,32 @@ use Symfony\Component\HttpFoundation\Request;
  * Controller for the Cults3D API proxy endpoint.
  */
 class Cults3dApiProxyController extends ControllerBase {
+
+  /**
+   * The HTTP client.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * Constructs a Cults3dApiProxyController.
+   *
+   * @param \GuzzleHttp\ClientInterface $http_client
+   *   The HTTP client.
+   */
+  public function __construct(ClientInterface $http_client) {
+    $this->httpClient = $http_client;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('http_client')
+    );
+  }
 
   /**
    * Fetch model data from Cults3D API.
@@ -41,7 +69,7 @@ class Cults3dApiProxyController extends ControllerBase {
     $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount likesCount viewsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
 
     try {
-      $response = \Drupal::httpClient()->post('https://cults3d.com/graphql', [
+      $response = $this->httpClient->post('https://cults3d.com/graphql', [
         'auth' => [$username, $api_key],
         'json' => ['query' => $query],
         'timeout' => 15,
@@ -86,7 +114,7 @@ class Cults3dApiProxyController extends ControllerBase {
       ]);
     }
     catch (GuzzleException $e) {
-      return new JsonResponse(['error' => 'API request failed: ' . $e->getMessage()], 500);
+      return new JsonResponse(['error' => 'API request failed.'], 500);
     }
   }
 

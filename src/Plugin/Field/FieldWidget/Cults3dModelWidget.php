@@ -2,10 +2,15 @@
 
 namespace Drupal\cults3d_embed\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'cults3d_model_widget' widget.
@@ -19,6 +24,70 @@ use GuzzleHttp\Exception\GuzzleException;
  * )
  */
 class Cults3dModelWidget extends WidgetBase {
+
+  /**
+   * The HTTP client.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * The date formatter.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected $dateFormatter;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * Constructs a Cults3dModelWidget.
+   *
+   * @param string $plugin_id
+   *   The plugin_id for the widget.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   The definition of the field to which the widget is associated.
+   * @param array $settings
+   *   The widget settings.
+   * @param array $third_party_settings
+   *   Any third party settings.
+   * @param \GuzzleHttp\ClientInterface $http_client
+   *   The HTTP client.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The date formatter service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, ClientInterface $http_client, DateFormatterInterface $date_formatter, ConfigFactoryInterface $config_factory) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
+    $this->httpClient = $http_client;
+    $this->dateFormatter = $date_formatter;
+    $this->configFactory = $config_factory;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['third_party_settings'],
+      $container->get('http_client'),
+      $container->get('date.formatter'),
+      $container->get('config.factory')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -37,26 +106,39 @@ class Cults3dModelWidget extends WidgetBase {
 
     // Show existing fetched data as a preview.
     if (!empty($item->model_name)) {
+      $fetched_date = $item->fetched_at
+        ? $this->dateFormatter->format($item->fetched_at, 'short')
+        : $this->t('Never');
       $element['preview'] = [
         '#type' => 'details',
         '#title' => $this->t('Fetched data preview'),
         '#open' => TRUE,
         'info' => [
           '#markup' => '<p><strong>' . htmlspecialchars($item->model_name) . '</strong><br>'
-            . htmlspecialchars($item->description_summary ?? '') . '<br>'
-            . $this->t('Downloads: @count | Price: @price', [
-              '@count' => $item->download_count ?? 0,
-              '@price' => $item->price ?? 'Free',
-            ]) . '<br>'
-            . $this->t('Last fetched: @date', [
-              '@date' => $item->fetched_at ? \Drupal::service('date.formatter')->format($item->fetched_at, 'short') : $this->t('Never'),
-            ]) . '</p>',
+          . htmlspecialchars($item->description_summary ?? '') . '<br>'
+          . $this->t('Downloads: @count | Price: @price', [
+            '@count' => $item->download_count ?? 0,
+            '@price' => $item->price ?? 'Free',
+          ]) . '<br>'
+          . $this->t('Last fetched: @date', [
+            '@date' => $fetched_date,
+          ]) . '</p>',
         ],
       ];
     }
 
     // Hidden fields to pass through existing values.
-    foreach (['model_name', 'description_summary', 'download_count', 'likes_count', 'views_count', 'price', 'thumbnail_url', 'fetched_at'] as $key) {
+    $hidden_keys = [
+      'model_name',
+      'description_summary',
+      'download_count',
+      'likes_count',
+      'views_count',
+      'price',
+      'thumbnail_url',
+      'fetched_at',
+    ];
+    foreach ($hidden_keys as $key) {
       $element[$key] = [
         '#type' => 'hidden',
         '#default_value' => $item->{$key} ?? '',
@@ -80,7 +162,7 @@ class Cults3dModelWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    foreach ($values as $delta => &$value) {
+    foreach ($values as &$value) {
       $url = $value['cults3d_url'] ?? '';
       if (empty($url)) {
         continue;
@@ -115,6 +197,12 @@ class Cults3dModelWidget extends WidgetBase {
    *
    * URL format: https://cults3d.com/en/3d-model/{category}/{slug}
    * The API slug is just the final path segment (the model slug).
+   *
+   * @param string $url
+   *   The Cults3D model URL.
+   *
+   * @return string|null
+   *   The extracted slug, or NULL if the URL does not match.
    */
   protected function extractSlug(string $url): ?string {
     if (preg_match('#cults3d\.com/[a-z]{2}/3d-model/[^/]+/([^/?]+)#', $url, $matches)) {
@@ -125,21 +213,27 @@ class Cults3dModelWidget extends WidgetBase {
 
   /**
    * Fetch model data from the Cults3D GraphQL API.
+   *
+   * @param string $slug
+   *   The model slug.
+   *
+   * @return array|null
+   *   An associative array of model data, or NULL on failure.
    */
   protected function fetchFromApi(string $slug): ?array {
-    $config = \Drupal::config('cults3d_embed.settings');
+    $config = $this->configFactory->get('cults3d_embed.settings');
     $username = $config->get('api_username');
     $api_key = $config->get('api_key');
 
     if (empty($username) || empty($api_key)) {
-      \Drupal::messenger()->addError(t('Cults3D API credentials are not configured. Go to /admin/config/services/cults3d.'));
+      $this->messenger()->addError($this->t('Cults3D API credentials are not configured. Go to /admin/config/services/cults3d.'));
       return NULL;
     }
 
     $query = 'query { creation(slug: "' . addslashes($slug) . '") { name(locale: EN) description url downloadsCount likesCount viewsCount price(currency: USD) { formatted cents } illustrationImageUrl } }';
 
     try {
-      $response = \Drupal::httpClient()->post('https://cults3d.com/graphql', [
+      $response = $this->httpClient->post('https://cults3d.com/graphql', [
         'auth' => [$username, $api_key],
         'json' => ['query' => $query],
         'timeout' => 15,
@@ -148,7 +242,7 @@ class Cults3dModelWidget extends WidgetBase {
       $data = json_decode($response->getBody(), TRUE);
 
       if (empty($data['data']['creation'])) {
-        \Drupal::messenger()->addWarning(t('No model found for slug: @slug', ['@slug' => $slug]));
+        $this->messenger()->addWarning($this->t('No model found for slug: @slug', ['@slug' => $slug]));
         return NULL;
       }
 
@@ -184,7 +278,7 @@ class Cults3dModelWidget extends WidgetBase {
       ];
     }
     catch (GuzzleException $e) {
-      \Drupal::messenger()->addError(t('Cults3D API fetch failed: @message', ['@message' => $e->getMessage()]));
+      $this->messenger()->addError($this->t('Cults3D API fetch failed: @message', ['@message' => $e->getMessage()]));
       return NULL;
     }
   }

@@ -8,15 +8,6 @@
 /**
  * Implements hook_theme().
  */
-/**
- * Implements template_preprocess_HOOK() for cults3d_embed_card.
- */
-function template_preprocess_cults3d_embed_card(&$variables) {
-  if (empty($variables['logo_path'])) {
-    $variables['logo_path'] = \Drupal::service('extension.list.module')->getPath('cults3d_embed') . '/images/cults3d-logo.svg';
-  }
-}
-
 function cults3d_embed_theme($existing, $type, $theme, $path) {
   return [
     'cults3d_embed_card' => [
@@ -34,4 +25,13 @@ function cults3d_embed_theme($existing, $type, $theme, $path) {
       'template' => 'cults3d-embed-card',
     ],
   ];
+}
+
+/**
+ * Implements template_preprocess_HOOK() for cults3d_embed_card.
+ */
+function template_preprocess_cults3d_embed_card(&$variables) {
+  if (empty($variables['logo_path'])) {
+    $variables['logo_path'] = \Drupal::service('extension.list.module')->getPath('cults3d_embed') . '/images/cults3d-logo.svg';
+  }
 }

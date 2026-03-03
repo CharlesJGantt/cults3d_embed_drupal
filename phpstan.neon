@@ -1,0 +1,10 @@
+parameters:
+  level: 1
+  paths:
+    - src
+    - cults3d_embed.module
+  ignoreErrors:
+    - identifier: new.static
+includes:
+  - vendor/mglaman/phpstan-drupal/extension.neon
+  - vendor/phpstan/phpstan-deprecation-rules/rules.neon

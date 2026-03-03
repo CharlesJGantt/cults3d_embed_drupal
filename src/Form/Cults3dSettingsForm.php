@@ -4,12 +4,44 @@ namespace Drupal\cults3d_embed\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure Cults3D API settings.
  */
 class Cults3dSettingsForm extends ConfigFormBase {
+
+  /**
+   * The HTTP client.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * Constructs a Cults3dSettingsForm.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \GuzzleHttp\ClientInterface $http_client
+   *   The HTTP client.
+   */
+  public function __construct($config_factory, ClientInterface $http_client) {
+    parent::__construct($config_factory);
+    $this->httpClient = $http_client;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('http_client')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -88,7 +120,7 @@ class Cults3dSettingsForm extends ConfigFormBase {
     $query = 'query { creation(slug: "the-5-inch-big-jerk-open-pour-mold-by-makingbaits-com") { name(locale: EN) } }';
 
     try {
-      $response = \Drupal::httpClient()->post('https://cults3d.com/graphql', [
+      $response = $this->httpClient->post('https://cults3d.com/graphql', [
         'auth' => [$username, $api_key],
         'json' => ['query' => $query],
         'timeout' => 10,
